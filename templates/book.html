@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% import "forms.html" as forms %}
+
+
+
+{% block content %}
+
+{% for record in records %}
+{{forms.recordList(record)}}
+{% endfor %}
+
+<form action="index.php?ctrl=Book"  method="post">
+
+    {{ forms.input(input.type,input.name,input.value,input.placeholder) }}
+    <br>
+    {{  forms.onlyButton (onlyButton.name,onlyButton.value,onlyButton.text) }}
+
+</form>
+
+{% endblock content %}
+
+
+{% block navigation %}
+{{ forms.button(actions)}}
+
+{% endblock navigation %}

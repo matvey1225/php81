@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% import "forms.html" as forms %}
+
+
+{% block content %}
+{{forms.article(article) }}
+{% endblock content %}
+
+
+
+{% block navigation %}
+{{ forms.button(actions, name, value) }}
+{% endblock %}

@@ -1,0 +1,59 @@
+{% macro article( article)%}
+<div>
+    Header :<p style="margin-left: 8em; width: 33em   ">{{article.header}}</p>
+    <br>
+    Content :<p style="margin-left: 8em; width: 33em   "> {{article.text}}</p>
+    <br>
+    Author :<p style="margin-left: 8em; width: 33em   "> {{article.author}}</p>
+    <br>
+</div>
+{% endmacro  %}
+
+
+{% macro button (actions , name='', value='') %}
+{% for action in actions %}
+<form action={{action.action}} method={{ action.method }}>
+    <button type='submit' name='{{name}}' value="{{value}}">{{action.text}}</button>
+</form>
+{% endfor %}
+{% endmacro %}
+
+
+{% macro news (articles) %}
+{% for article in articles %}
+<h3><a style="text-decoration: none ;color: black" href="index.php?ctrl=ArticleId&id={{article.id}}">
+    {{article.header}}</a></h3>
+<p style="color: darkgray">Author : {{article.author}}</p>
+
+{% endfor %}
+{% endmacro %}
+
+
+{% macro newsAdmin (articles) %}
+{% for article in articles %}
+<h3><a style="text-decoration: none" href="index.php?ctrl=NewsAdmin&act=showArticle&id={{article.id}}">
+    {{article.header}}</a></h3>
+<p>Author : {{article.author}}</p>
+{% endfor %}
+{% endmacro %}
+
+
+{% macro onlyButton(name, value, text) %}
+<button type='submit' name='{{name}}' value="{{value}}">{{text}}</button>
+{% endmacro %}
+
+{% macro input (type = 'text', name='', value ='',placeholder='') %}
+<input type='{{type}}' name="{{name}}" required value="{{value}}" placeholder="{{placeholder}}">
+<br>
+{% endmacro  %}
+
+
+{% macro textarea (rows = 5, cols= 28, name,value = '', placeholder) %}
+<textarea rows='{{rows}}' cols='{{cols}}' name='{{name}}' required placeholder='{{placeholder}}'>{{value}}</textarea>
+<br>
+{% endmacro%}
+
+
+{% macro recordList (record) %}
+<p> {{record.name}} : {{record.record}} </p>
+{% endmacro  %}

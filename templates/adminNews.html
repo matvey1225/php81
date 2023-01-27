@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% import "forms.html" as forms %}
+
+
+{% block content %}
+{{forms.newsAdmin(articles) }}
+{% endblock content %}
+
+{% block navigation %}
+{{ forms.button(actions) }}
+{% endblock %}

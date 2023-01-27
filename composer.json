@@ -1,0 +1,21 @@
+{
+    "name": "matvey/test",
+    "autoload": {
+        "psr-4": {
+            "Matvey\\Test\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "matvey",
+            "email": "matvey.kudinov2001@yandex.ru"
+        }
+    ],
+    "require": {
+        "laminas/laminas-diactoros": "^2.24",
+        "laminas/laminas-stratigility": "^3.9",
+        "httpsoft/http-emitter": "^1.0",
+        "twig/twig": "^3.0",
+        "monolog/monolog": "^3.2"
+    }
+}

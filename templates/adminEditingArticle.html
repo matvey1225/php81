@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% import "forms.html" as forms %}
+
+
+
+{% block content %}
+<form action="index.php?ctrl=NewsAdmin&&act=editingArticle&&id={{article.id}}" method="post">
+    {{forms.input (inputHeader.type, inputHeader.name , article.header )}}
+    <br>
+    {{ forms.textarea(textarea.rows,textarea.cols,textarea.name, article.text )}}
+    <br>
+    {{ forms.input (inputAuthor.type, inputAuthor.name , article.author )}}
+    <br>
+    <button type="submit" name="readyToUpdate" value="true">send</button>
+</form>
+{{ forms.button(actions) }}
+{% endblock %}
