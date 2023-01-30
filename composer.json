@@ -16,6 +16,7 @@
         "laminas/laminas-stratigility": "^3.9",
         "httpsoft/http-emitter": "^1.0",
         "twig/twig": "^3.0",
-        "monolog/monolog": "^3.2"
+        "monolog/monolog": "^3.2",
+        "psr/container": "^2.0"
     }
 }
