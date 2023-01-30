@@ -6,24 +6,32 @@ namespace Matvey\Test\Controllers;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Stream;
 use Matvey\Test\Attributes\RoleHandlerAttribute;
+use Matvey\Test\Middlewares\Repositories\BookRepository;
 use Matvey\Test\Models\Book\Record;
+use Matvey\Test\Models\Role;
 use Matvey\Test\Models\TwigWorker\TwigWorker;
 use Matvey\Test\Models\User\User;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-#[RoleHandlerAttribute(role: 'user')]
-class Book implements RequestHandlerInterface
+#[RoleHandlerAttribute(role: Role::GENERAL)]
+class   Book implements RequestHandlerInterface
 {
+
+    public BookRepository $bookRepository;
+
+
+    public function  __construct(BookRepository $bookRepository)
+    {
+        $this->bookRepository = $bookRepository;
+    }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $body = $request->getParsedBody();
 
-        if ((isset($body['record'])) && (!empty($body['record']))) {
-            $record = new Record();
-            $record->setName($request->getAttribute('userName'))->setRecord($body['record'])->save();
+
+        if ( $this->bookRepository->newRecord($request)){
             return new Response\RedirectResponse('http://homework.local/test/index.php?ctrl=Book');
         }
 

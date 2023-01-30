@@ -4,10 +4,14 @@ namespace Matvey\Test\Controllers;
 
 
 use Laminas\Diactoros\Response;
+use Matvey\Test\Attributes\RoleHandlerAttribute;
+use Matvey\Test\Models\Role;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+
+#[RoleHandlerAttribute(role: Role::GENERAL)]
 class Output implements RequestHandlerInterface
 {
 
@@ -15,12 +19,12 @@ class Output implements RequestHandlerInterface
     {
         $cookie = $request->getCookieParams();
 
-        if (isset($cookie['token'])){
-            setcookie('token', '', time()-3600);
+        if (isset($cookie['token'])) {
+            setcookie('token', '', time() - 3600);
         }
 
         session_destroy();
 
-        return new Response\RedirectResponse('http://homework.local/test/index.php?ctrl=Registration') ;
+        return new Response\RedirectResponse('index.php?ctrl=Registration');
     }
 }

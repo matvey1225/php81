@@ -8,9 +8,8 @@ use Matvey\Test\Db\Db;
 abstract class Model
 {
     /**
-     * @param $id
+     * @param int $id
      * @return object|null
-     * @throws Exception
      */
     public static function findById(int $id): object|null
     {

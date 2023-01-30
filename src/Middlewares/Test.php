@@ -2,7 +2,8 @@
 
 namespace Matvey\Test\Middlewares;
 
-
+use Laminas\Diactoros\Response\HtmlResponse;
+use Matvey\Test\Models\TwigWorker\TwigWorker;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -13,8 +14,7 @@ class Test implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $request = $request->withHeader('test',['test']);
-//        echo 'test'.PHP_EOL;
-        return $handler->handle($request);
+        $templates = TwigWorker::twig('testImage.php',[] );
+        return new HtmlResponse($templates);
     }
 }

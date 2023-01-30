@@ -8,7 +8,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Matvey\Test\Controllers;
 
 final class Pipeline implements RequestHandlerInterface
 {
@@ -17,7 +16,7 @@ final class Pipeline implements RequestHandlerInterface
      */
     public function __construct(
         private readonly RequestHandlerInterface $handler,
-        private array                            $middlewares,
+        private array $middlewares,
     ) {
     }
 
@@ -27,8 +26,7 @@ final class Pipeline implements RequestHandlerInterface
 
         if ($middleware !== null) {
             return $middleware->process($request, $this);
-        }
-
+        }   
         return $this->handler->handle($request);
     }
 }

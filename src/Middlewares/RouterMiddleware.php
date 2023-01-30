@@ -2,8 +2,7 @@
 
 namespace Matvey\Test\Middlewares;
 
-use Laminas\Diactoros\Response;
-use Matvey\Test\Controllers\Home;
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -18,16 +17,14 @@ class RouterMiddleware implements MiddlewareInterface
 
         $query = $request->getQueryParams();
 
-        if (isset($query['ctrl']) && (!empty($query['ctrl'])) &&
-            (file_exists(__DIR__ . '/../Controllers/' . $query['ctrl'] . '.php')))
-        {
+        if (isset($query['ctrl']) && (!empty($query['ctrl'])) && (file_exists(__DIR__ . '/../Controllers/' . $query['ctrl'] . '.php'))) {
             $request = $request->withAttribute('ctrl', $query['ctrl']);
-        }else{
+        } else {
             $request = $request->withAttribute('ctrl', null);
         }
 
         if (isset($query['act']) && (!empty($query['act'])) &&
-            (method_exists( 'Matvey\\Test\\Controllers\\' . $query['ctrl'] ,  $query['act'] ))){
+            (method_exists('Matvey\\Test\\Controllers\\' . $query['ctrl'], $query['act']))) {
             $request = $request->withAttribute('act', $query['act']);
         }
         return $handler->handle($request);

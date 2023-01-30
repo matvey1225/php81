@@ -5,7 +5,11 @@
 namespace Matvey\Test\Attributes;
 
 
-#[\Attribute]
+
+
+use Attribute;
+
+#[Attribute(flags: Attribute::IS_REPEATABLE)]
 class RoleHandlerAttribute
 {
 

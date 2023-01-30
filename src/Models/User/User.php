@@ -7,10 +7,11 @@ include_once __DIR__ . '/../../../vendor/autoload.php';
 use http\Params;
 use Matvey\Test\Db\Db;
 use Matvey\Test\Model\Model;
+use Matvey\Test\Models\Role;
 
 class User extends Model
 {
-    protected static string $table = 'users';
+    protected static string $table = Role::USER;
     protected string $token = '';
     protected string $password = '';
     protected string $login = '';
@@ -91,19 +92,9 @@ class User extends Model
     }
 
 
-//not use
-    public function setUser(string $name, string $login, string $password): static
-    {
-        $this->name = $name;
-        $this->login = $login;
-        $this->password = md5(trim($password));
-        $this->token = md5($login . $password);
-        return $this;
-    }
-
-
     /**
-     * @param string $login
+     * @param string $params
+     * @param string $value
      * @return User возвращает логин юзера
      *
      * возвращает логин юзера
@@ -127,8 +118,6 @@ class User extends Model
     }
 
     /**
-     * @param string $login
-     *
      * @return bool
      * проверка на существование пользователя по логину
      */
