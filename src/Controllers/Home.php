@@ -6,7 +6,7 @@ include_once __DIR__ . '/../../vendor/autoload.php';
 
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Stream;
-use Matvey\Test\Models\Role;
+use Matvey\Test\Models\Role\Role;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;

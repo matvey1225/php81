@@ -5,6 +5,7 @@ namespace Matvey\Test\Container;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use ReflectionClass;
 use ReflectionException;
 
 class Container implements ContainerInterface
@@ -29,7 +30,7 @@ class Container implements ContainerInterface
      */
     private function prepareObject(string $class): object
     {
-        $classReflector = new \ReflectionClass($class);
+        $classReflector = new ReflectionClass($class);
 
 
         // Получаем рефлектор конструктора класса, проверяем - есть ли конструктор
@@ -58,5 +59,7 @@ class Container implements ContainerInterface
         // И возвращаем экземпляр класса со всеми зависимостями
         return new $class(...$args);
     }
+
+
 
 }

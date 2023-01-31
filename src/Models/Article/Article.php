@@ -19,23 +19,18 @@ class Article extends Model
         return $this;
     }
 
-    public function setArticle(string $header, string $text, string $author): void
-    {
-        $this->text = $text;
-        $this->author = $author;
-        $this->header = $header;
-    }
-
     public function setHeader(string $header): self
     {
         $this->header = $header;
         return $this;
     }
+
     public function setText(string $text): self
     {
         $this->text = $text;
         return $this;
     }
+
     public function setAuthor(string $author): self
     {
         $this->author = $author;
@@ -43,22 +38,8 @@ class Article extends Model
     }
 
 
-    public static function findAll():array{
-        $sql = 'SELECT * FROM ' . static::$table;
-        return Db::query($sql);
-    }
-
-
-    public function getArticle():array{
-        return ['id'=>$this->id,'header'=>$this->header,'text'=>$this->text,'author'=>$this->author];
-    }
-
-
     public function getId(): int|null
     {
-        if(!(bool)$this->id){
-            return null;
-        }
         return $this->id;
     }
 
@@ -76,4 +57,17 @@ class Article extends Model
     {
         return $this->header;
     }
+
+
+    public static function findAll():array{
+        $sql = 'SELECT * FROM ' . static::$table;
+        return Db::query($sql);
+    }
+
+
+    public function getArticle():array{
+        return ['id'=>$this->id,'header'=>$this->header,'text'=>$this->text,'author'=>$this->author];
+    }
+
+
 }

@@ -4,11 +4,12 @@ namespace Matvey\Test\Controllers;
 
 
 use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Response\HtmlResponse;
 use Matvey\Test\Attributes\RoleHandlerAttribute;
-use Matvey\Test\Middlewares\Repositories\NewsRepository;
 use Matvey\Test\Models\Article\Article;
-use Matvey\Test\Models\Role;
+use Matvey\Test\Models\Role\Role;
 use Matvey\Test\Models\TwigWorker\TwigWorker;
+use Matvey\Test\Repositoryes\RepositoryNews;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -18,28 +19,30 @@ use Psr\Http\Server\RequestHandlerInterface;
 class ArticleId implements RequestHandlerInterface
 {
 
-    public NewsRepository $newsRepository;
+    protected RepositoryNews $repositoryNews;
 
-    public function __construct(NewsRepository $newsRepository)
+    public function __construct(RepositoryNews $repositoryNews)
     {
-        $this->newsRepository=$newsRepository;
+        $this->repositoryNews=$repositoryNews;
     }
 
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-
-        $article = $this->newsRepository->getArticle($request);
+        $query = $request->getQueryParams();
+        $article = $this->repositoryNews->getById($query['id']);
 
         $template = TwigWorker::twig('article.html',
-            ['title' => $article->getHeader(),
+            [
+                'title' => $article->getHeader(),
                 'article' => $article->getArticle(),
-                'actions' => [
-                    ['action' => 'http://homework.local/test/index.php?ctrl=Home', 'method' => 'post', 'text' => 'Home'],
-                    ['action' => "http://homework.local/test/index.php?ctrl=News", 'method' => 'post', 'text' => 'News']
-                ]
+                'actions' =>
+                    [
+                        ['action' => 'index.php?ctrl=Home', 'method' => 'post', 'text' => 'Home'],
+                        ['action' => "index.php?ctrl=News", 'method' => 'post', 'text' => 'News']
+                    ]
             ]);
 
-        return (new Response\HtmlResponse($template));
+        return new HtmlResponse($template);
     }
 }

@@ -4,27 +4,24 @@ namespace Matvey\Test\Models\User;
 
 include_once __DIR__ . '/../../../vendor/autoload.php';
 
-use http\Params;
+
 use Matvey\Test\Db\Db;
 use Matvey\Test\Model\Model;
-use Matvey\Test\Models\Role;
+use Matvey\Test\Models\Role\Role;
 
 class User extends Model
 {
-    protected static string $table = Role::USER;
+    public const LOGIN = 'login';
+    public const PASSWORD= 'password';
+    public const REGISTRATION = 'registration';
+
+    protected static string $table = 'users';
     protected string $token = '';
     protected string $password = '';
     protected string $login = '';
     protected string $name = '';
     protected int $id = 0;
-    protected string $role = 'user';
-
-    public function getUser(): array
-    {
-        return ['name' => $this->name, 'login' => $this->login,
-            'password' => $this->password, 'token' => $this->token, 'id' => $this->id,];
-    }
-
+    protected string $role = Role::USER;
 
     public function getPassword(): string
     {
@@ -35,6 +32,7 @@ class User extends Model
     {
         return $this->token;
     }
+
     public function getName(): string
     {
         return $this->name;
@@ -56,14 +54,13 @@ class User extends Model
     }
 
     /**
-     * @param array $data - $request->getParseBody()
-     * @param string $mode
+     * @param array $data -
+     * @param string $mode User::LOGIN || User::REGISTRATION
      * @return User|null
      */
-
     public function parseUserFromBodyHttp(array $data, string $mode): User|null
     {
-        if ($this->completelyFilledBody($data, $mode)
+        if ($this :: correctFilledBody($data, $mode)
         ) {
             if (isset($data['name'])) {
                 $this->name = $data['name'];
@@ -75,16 +72,20 @@ class User extends Model
         } else {
             return null;
         }
-
     }
 
-    public function completelyFilledBody(array $data, string $mode): ?bool
+    /**
+     * @param array $data
+     * @param string $mode
+     * @return bool|null
+     */
+    public static function correctFilledBody(array $data, string $mode): ?bool
     {
-        if ($mode === 'registration') {
+        if ($mode === self::REGISTRATION) {
             return ((isset($data['name'])) && (isset($data['password'])) && (isset($data['login']))
                 && (!empty($data['name'])) && (!empty($data['password'])) && (!empty($data['login'])));
         }
-        if ($mode === 'login') {
+        if ($mode === self::LOGIN) {
             return ((isset($data['password'])) && (isset($data['login']))
                 && (!empty($data['password'])) && (!empty($data['login'])));
         }
@@ -95,21 +96,21 @@ class User extends Model
     /**
      * @param string $params
      * @param string $value
-     * @return User возвращает логин юзера
-     *
-     * возвращает логин юзера
+     * @return User|null
      */
-    public static function getUserByParams(string $params, string $value): User
+    public static function getUserByParams(string $params, string $value): ?User
     {
         $user = Db::query('SELECT * FROM users WHERE ' . $params . ' = ?', self::class, [$value]);
+        if (empty($user)) {
+            return null;
+        }
         return $user[0];
     }
 
     public function identification(): User|false
     {
-        $userFromDb = null;
         if ($this->existUser()) {
-            $userFromDb = User::getUserByParams('login', $this->getLogin());
+            $userFromDb = User::getUserByParams(self::LOGIN, $this->getLogin());
             if ($userFromDb->getPassword() === $this->getPassword()) {
                 return $userFromDb;
             }
@@ -117,14 +118,9 @@ class User extends Model
         return false;
     }
 
-    /**
-     * @return bool
-     * проверка на существование пользователя по логину
-     */
-
     public function existUser(): bool
     {
-        return (bool)Db::query('SELECT * FROM users WHERE login = ?', static::class, [$this->login]);
+        return (bool)Db::query('SELECT * FROM users WHERE login = ?', self::class, [$this->login]);
     }
 
 }

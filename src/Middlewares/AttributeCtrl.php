@@ -18,22 +18,15 @@ class AttributeCtrl implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-
         $attributesRequest = $request->getAttributes();
+        $ctrl = 'Matvey\Test\Controllers\\' . $attributesRequest['ctrl'];
+        $ctrlAttributes = (new ReflectionClass($ctrl))->getAttributes();
 
-        if ((isset($attributesRequest['ctrl'])) && (!empty($attributesRequest['ctrl']))) {
-            $ctrl = 'Matvey\Test\Controllers\\' . $attributesRequest['ctrl'];
-            $ctrlAttributes = (new ReflectionClass($ctrl))->getAttributes();
-
-
-            if(!empty($ctrlAttributes)){
-                foreach ($ctrlAttributes as $ctrlAttribute) {
-                    if ($ctrlAttribute->getName() === "Matvey\Test\Attributes\RoleHandlerAttribute") {
-                        $request = $request->withAttribute('ctrlAttribute', $ctrlAttribute->getArguments()['role']);
-                    }
+        if (!empty($ctrlAttributes)) {
+            foreach ($ctrlAttributes as $ctrlAttribute) {
+                if ($ctrlAttribute->getName() === "Matvey\Test\Attributes\RoleHandlerAttribute") {
+                    $request = $request->withAttribute('ctrlAttribute', $ctrlAttribute->getArguments()['role']);
                 }
-            }else {
-                $request = $request->withAttribute('ctrlAttribute', null);
             }
 
         } else {

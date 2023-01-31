@@ -5,7 +5,7 @@ namespace Matvey\Test\Controllers;
 
 use Laminas\Diactoros\Response;
 use Matvey\Test\Attributes\RoleHandlerAttribute;
-use Matvey\Test\Models\Role;
+use Matvey\Test\Models\Role\Role;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;

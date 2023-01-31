@@ -4,12 +4,12 @@ namespace Matvey\Test\Controllers;
 
 
 use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Response\HtmlResponse;
 use Matvey\Test\Attributes\RoleHandlerAttribute;
-use Matvey\Test\Middlewares\Repositories\NewsRepository;
 use Matvey\Test\Models\Article\Article;
-use Matvey\Test\Models\Role;
+use Matvey\Test\Models\Role\Role;
 use Matvey\Test\Models\TwigWorker\TwigWorker;
-use Psalm\Node\Expr\VirtualAssignRef;
+use Matvey\Test\Repositoryes\RepositoryNews;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -17,23 +17,22 @@ use Psr\Http\Server\RequestHandlerInterface;
 #[RoleHandlerAttribute(role: Role::USER)]
 class News implements RequestHandlerInterface
 {
-    public NewsRepository $newsRepository;
+    protected RepositoryNews $repositoryNews;
 
-    public function __construct(NewsRepository $newsRepository)
+    public function __construct(RepositoryNews $repositoryNews)
     {
-        $this->newsRepository = $newsRepository;
+        $this->repositoryNews = $repositoryNews;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-
-        $articles = $this->newsRepository->getNews($request);
-
+        $articles = $this->repositoryNews->getAll();
         $template = TwigWorker::twig('news.html',
-            ['title' => 'News', 'articles' => $articles,
-                'actions' => [['action' => 'http://homework.local/test/index.php?ctrl=Home', 'method' => 'post', 'text' => 'Home']]
+            [
+                'title' => 'News',
+                'articles' => $articles,
+                'actions' => [['action' => 'index.php?ctrl=Home', 'method' => 'post', 'text' => 'Home']]
             ]);
-
-        return (new Response\HtmlResponse($template));
+        return new HtmlResponse($template);
     }
 }

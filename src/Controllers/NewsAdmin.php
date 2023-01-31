@@ -8,7 +8,7 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Diactoros\Stream;
 use Matvey\Test\Models\Article\Article;
-use Matvey\Test\Models\Role;
+use Matvey\Test\Models\Role\Role;
 use Matvey\Test\Models\TwigWorker\TwigWorker;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

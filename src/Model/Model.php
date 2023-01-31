@@ -4,6 +4,7 @@ namespace Matvey\Test\Model;
 
 use Exception;
 use Matvey\Test\Db\Db;
+use Throwable;
 
 abstract class Model
 {
@@ -19,8 +20,8 @@ abstract class Model
             $sql = 'SELECT * FROM ' . static::$table . '  WHERE id = ?';
             $obj = Db::query($sql, static::class, [$id]);
 
-        } catch (\Throwable $throwable) {
-            echo $throwable->getMessage();
+        } catch (Throwable $throwable) {
+            return  null;
         }
 
         if (empty($obj)) {
@@ -41,7 +42,6 @@ abstract class Model
     {
 
         $fields = get_object_vars($this);
-
         $cols = [];
         $data = [];
 
@@ -56,8 +56,9 @@ abstract class Model
             $cols[] = $name;
             $data[':' . $name] = $value;
         }
-        $sql = 'INSERT INTO ' . static::$table . '(' . implode(',', $cols) . ')VALUES('
-            . implode(',', array_keys($data)) . ')';
+        $sql = 'INSERT INTO ' . static::$table . ' (' . implode(',', $cols) . ') VALUES ('
+            . implode(',', array_keys($data)) . ' )';
+
         return Db::execute($sql, $data);
     }
 
@@ -109,6 +110,7 @@ abstract class Model
             if ((bool)self::findById(static::getId())) {
                 static::update();
             } else {
+
                 static::insert();
             }
         } else {

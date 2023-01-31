@@ -4,16 +4,12 @@ namespace Matvey\Test\Db;
 
 include_once __DIR__ . '/../../vendor/autoload.php';
 
-use http\Exception\RuntimeException;
 use PDO;
-use PDOException;
 
 class Db
 {
     /**
      * @return PDO
-     *
-     * выполняет подключение к бд
      */
     protected static function includeDb(): PDO
     {
@@ -21,29 +17,26 @@ class Db
     }
 
     /**
-     * выполняет запрос SQL без возврата значений Insert,Update
-     * @param string $sql запрос к бд
+     * Insert,Update
+     * @param string $sql
      * @param array|null $data
-     * @return bool true - успешно/ иначе false
+     * @return bool
      */
     public static function execute(string $sql, array $data = null): bool
     {
-
-
         $dbh = Db:: includeDb();
         $sth = $dbh->prepare($sql);
-
         return (bool)$sth->execute($data);
     }
 
     /**
-     * выполняет запрос SQL и возвращает значение
-     *
-     * @param string $sql - запрос
+     * SELECT
+     * @param string $sql
      * @param string|null $class
      * @param array $data
-     * @return array|false - массив со значениями или false
+     * @return array|false
      */
+
     public static function query(string $sql, string $class = null, array $data = []): array|false
     {
 
@@ -56,7 +49,6 @@ class Db
         } else {
             return $sth->fetchAll();
         }
-
     }
 
 }
