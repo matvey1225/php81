@@ -4,11 +4,12 @@ namespace Matvey\Test\Controllers;
 
 
 use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Matvey\Test\Attributes\RoleHandlerAttribute;
 use Matvey\Test\Models\Book\Record;
 use Matvey\Test\Models\Role\Role;
 use Matvey\Test\Models\TwigWorker\TwigWorker;
-use Matvey\Test\Repositoryes\RepositoryBook;
+use Matvey\Test\Repositoryes\Repository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -17,13 +18,13 @@ use Psr\Http\Server\RequestHandlerInterface;
 class   Book implements RequestHandlerInterface
 {
 
-    public RepositoryBook $repositoryBook;
+    public Repository $repositoryBook;
     public Record $record;
 
-    public function __construct(RepositoryBook $repositoryBook,Record $record)
+    public function __construct(Repository $repositoryBook,Record $record)
     {
         $this->record = $record;
-        $this->repositoryBook = $repositoryBook;
+        $this->repositoryBook = $repositoryBook->setModel($record);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -35,7 +36,7 @@ class   Book implements RequestHandlerInterface
                 ->setName($request->getAttribute('userName'))
                 ->setRecord($body['record'])
                 ->save();
-            return new Response\RedirectResponse('index.php?ctrl=Book');
+            return new RedirectResponse('index.php?ctrl=Book');
         }
 
 

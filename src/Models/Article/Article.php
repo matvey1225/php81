@@ -4,14 +4,16 @@ namespace Matvey\Test\Models\Article;
 
 use Matvey\Test\Db\Db;
 use Matvey\Test\Model\Model;
+use Matvey\Test\Models\Interfaces\hasId;
 
-class Article extends Model
+class Article extends Model implements hasId
 {
-    public static string $table = 'News';
+
+    public const  TABLE = 'News';
     protected ?int $id = null;
+    protected string $header;
     protected string $text;
     protected string $author;
-    protected string $header;
 
     public function setId(int $id): self
     {
@@ -58,15 +60,15 @@ class Article extends Model
         return $this->header;
     }
 
-
-    public static function findAll():array{
-        $sql = 'SELECT * FROM ' . static::$table;
-        return Db::query($sql);
-    }
-
-
-    public function getArticle():array{
-        return ['id'=>$this->id,'header'=>$this->header,'text'=>$this->text,'author'=>$this->author];
+    public function getArticle(): array
+    {
+        return
+            [
+                'id' => $this->id,
+                'header' => $this->header,
+                'text' => $this->text,
+                'author' => $this->author
+            ];
     }
 
 

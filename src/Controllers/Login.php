@@ -8,7 +8,7 @@ use Laminas\Diactoros\Stream;
 use Matvey\Test\Attributes\RoleHandlerAttribute;
 use Matvey\Test\Models\Role\Role;
 use Matvey\Test\Models\User\User;
-use Matvey\Test\Repositoryes\RepositoryUser;
+use Matvey\Test\Repositoryes\Repository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -17,11 +17,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 class Login implements RequestHandlerInterface
 {
     protected User $user;
-    protected RepositoryUser $repositoryUser;
+    protected Repository $repositoryUser;
 
-    public function __construct(User $user, RepositoryUser $repositoryUser)
+    public function __construct(User $user, Repository $repositoryUser)
     {
-        $this->repositoryUser = $repositoryUser;
+        $this->repositoryUser = $repositoryUser->setModel($user);
         $this->user = $user;
     }
 
@@ -30,7 +30,8 @@ class Login implements RequestHandlerInterface
         $body = $request->getParsedBody();
 //method name ... //
         if (User::correctFilledBody($body, User::LOGIN)) {
-            $userDb = $this->repositoryUser->getUserByParams(User::LOGIN, $body[User::LOGIN]);
+//            var_dump($body[User::LOGIN]);
+            $userDb = $this->repositoryUser->getByParams(User::LOGIN, $body[User::LOGIN]);
 
             if ($userDb !== null) {
                 $userPassword = $request->getParsedBody();

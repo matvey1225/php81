@@ -7,15 +7,17 @@ include_once __DIR__ . '/../../../vendor/autoload.php';
 
 use Matvey\Test\Db\Db;
 use Matvey\Test\Model\Model;
+use Matvey\Test\Models\Interfaces\hasId;
 use Matvey\Test\Models\Role\Role;
 
-class User extends Model
+class User extends Model implements hasId
 {
     public const LOGIN = 'login';
     public const PASSWORD= 'password';
     public const REGISTRATION = 'registration';
+    public const TABLE = 'users';
 
-    protected static string $table = 'users';
+//    protected static string $table = 'users';
     protected string $token = '';
     protected string $password = '';
     protected string $login = '';
@@ -107,16 +109,16 @@ class User extends Model
         return $user[0];
     }
 
-    public function identification(): User|false
-    {
-        if ($this->existUser()) {
-            $userFromDb = User::getUserByParams(self::LOGIN, $this->getLogin());
-            if ($userFromDb->getPassword() === $this->getPassword()) {
-                return $userFromDb;
-            }
-        }
-        return false;
-    }
+//    public function identification(): User|false
+//    {
+//        if ($this->existUser()) {
+//            $userFromDb = User::getUserByParams(self::LOGIN, $this->getLogin());
+//            if ($userFromDb->getPassword() === $this->getPassword()) {
+//                return $userFromDb;
+//            }
+//        }
+//        return false;
+//    }
 
     public function existUser(): bool
     {

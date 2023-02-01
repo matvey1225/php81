@@ -1,6 +1,8 @@
 <?php
 
 namespace Matvey\Test\Repositoryes;
+use Symfony\Component\Console\Helper\Table;
+
 interface RepositoryInterface
 {
 

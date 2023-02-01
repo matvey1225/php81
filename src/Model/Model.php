@@ -4,9 +4,10 @@ namespace Matvey\Test\Model;
 
 use Exception;
 use Matvey\Test\Db\Db;
+use Matvey\Test\Models\Interfaces\hasId;
 use Throwable;
 
-abstract class Model
+abstract class Model implements hasId
 {
     /**
      * @param int $id
@@ -14,14 +15,11 @@ abstract class Model
      */
     public static function findById(int $id): object|null
     {
-        $obj = null;
-
         try {
-            $sql = 'SELECT * FROM ' . static::$table . '  WHERE id = ?';
+            $sql = 'SELECT * FROM ' . static::TABLE . '  WHERE id = ?';
             $obj = Db::query($sql, static::class, [$id]);
-
         } catch (Throwable $throwable) {
-            return  null;
+            return null;
         }
 
         if (empty($obj)) {
@@ -56,7 +54,7 @@ abstract class Model
             $cols[] = $name;
             $data[':' . $name] = $value;
         }
-        $sql = 'INSERT INTO ' . static::$table . ' (' . implode(',', $cols) . ') VALUES ('
+        $sql = 'INSERT INTO ' . $this::TABLE . ' (' . implode(',', $cols) . ') VALUES ('
             . implode(',', array_keys($data)) . ' )';
 
         return Db::execute($sql, $data);
@@ -88,7 +86,7 @@ abstract class Model
 
             $sql = $sql . ' ' . $name . '=:' . $name . ',';
         }
-        $sql = 'UPDATE ' . static::$table . ' SET ' . trim($sql, ',') . '  WHERE id =:id';
+        $sql = 'UPDATE ' . $this::TABLE. ' SET ' . trim($sql, ',') . '  WHERE id =:id';
 
         return Db::execute($sql, $data);
 
@@ -101,16 +99,14 @@ abstract class Model
      * (если есть такой id - то обновит поля)
      * @throws Exception
      */
+
     public function save(): void
     {
         $fields = get_object_vars($this);
-
         if ((isset($fields['id'])) && (!empty($fields['id']))) {
-
-            if ((bool)self::findById(static::getId())) {
+            if ((bool)static::getId()) {
                 static::update();
             } else {
-
                 static::insert();
             }
         } else {
@@ -120,13 +116,15 @@ abstract class Model
 
 
     /**
-     * @return bool
-     *
+     * @return bool|Exception
      * удаляет объект из бд по id
      */
-    public function delete(): bool
+    public function delete()
     {
-        $sql = 'DELETE  FROM ' . static::$table . ' WHERE id =' . static::getId();
+        if (($this->getId()) === null){
+            return new Exception(' not Id for ');
+        }
+        $sql = 'DELETE  FROM ' . $this::TABLE . ' WHERE id =' . $this->getId();
         return Db::execute($sql);
     }
 
@@ -137,8 +135,7 @@ abstract class Model
      */
     public static function findAll(): array
     {
-        $sql = 'SELECT * FROM ' . static::$table;
-
+        $sql = 'SELECT * FROM ' . static::TABLE;
         return \Matvey\Php9\Db\Db::query($sql, static::class);
     }
 

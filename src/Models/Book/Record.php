@@ -6,14 +6,15 @@ namespace Matvey\Test\Models\Book;
 
 use Matvey\Test\Db\Db;
 use Matvey\Test\Model\Model;
+use Matvey\Test\Models\Interfaces\hasId;
 
-class Record extends Model
+class Record extends Model implements hasId
 {
 
-    protected static string $table = 'GuestBook';
+    public const TABLE ='GuestBook';
     protected string $record;
     protected string $name;
-
+    protected ?int $id = null;
 
     public function setName(string $name):Record
     {
@@ -29,9 +30,14 @@ class Record extends Model
 
     public static function findAll(): array
     {
-        $sql = 'SELECT * FROM ' . static::$table;
+        $sql = 'SELECT * FROM ' . self::TABLE;
 
         return Db::query($sql);
     }
 
+
+    public function getId(): int|null
+    {
+      return $this->id;
+    }
 }

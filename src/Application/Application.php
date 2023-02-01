@@ -75,6 +75,8 @@ class Application
                     $throwable->getFile()
                 ]
             );
+            echo ' <pre>';
+            var_dump($throwable);
             $response = (new TestController())->handle(new ServerRequest());
         } finally {
             $this->emitter->emit($response);

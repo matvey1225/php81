@@ -5,11 +5,13 @@ namespace Matvey\Test\Controllers;
 
 use Exception;
 use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Laminas\Diactoros\Stream;
 use Matvey\Test\Models\Article\Article;
 use Matvey\Test\Models\Role\Role;
 use Matvey\Test\Models\TwigWorker\TwigWorker;
+use Matvey\Test\Repositoryes\Repository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -19,21 +21,42 @@ use Matvey\Test\Attributes\RoleHandlerAttribute;
 class NewsAdmin implements RequestHandlerInterface
 {
 
+    protected Repository $repositoryArticles;
+    protected  Article $article;
+    protected array $body;
+    protected array $query;
+    protected array $attributes;
+
+    public function __construct(Repository $repositoryArticles, Article $article)
+    {
+        $this->repositoryArticles = $repositoryArticles->setModel($article);
+    }
+
+
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $attributes = $request->getAttributes();
+        $this->attributes = $request->getAttributes();
+        $this->body = $request->getParsedBody();
+        $this->query = $request->getQueryParams();
+        if (isset($this->query['id'])) {
+            $this->article = (($this->repositoryArticles)->getById( (int)$this->query['id']) );
+        }
 
-        if ((isset($attributes['act'])) && (!empty($attributes['act']))) {
-            $act = $attributes['act'];
+
+        if ((isset($this->attributes['act'])) && (!empty($this->attributes['act']))) {
+            $act = $this->attributes['act'];
             return $this->$act($request);
-
         }
         return new RedirectResponse('index.php?ctrl=NewsAdmin&act=home');
     }
 
+
     public function list(ServerRequestInterface $request): ResponseInterface
     {
-        $articles = Article::findAll();
+
+        $articles = $this->repositoryArticles->getAll();
+
+
         $template = TwigWorker::twig('adminNews.html',
             [
                 'title' => 'News',
@@ -50,11 +73,15 @@ class NewsAdmin implements RequestHandlerInterface
 
     public function addArticle(ServerRequestInterface $request): ResponseInterface
     {
-        $body = $request->getParsedBody();
-        if ((isset($body['author'])) && (isset($body['text'])) && (isset($body['header']))) {
-            $article = new  Article();
-            $article->setAuthor($body['author'])->setText($body['text'])->setHeader($body['header'])->save();
-            return new Response\RedirectResponse('index.php?ctrl=NewsAdmin&act=list');
+
+
+        if ((isset($this->body['author'])) && (isset($this->body['text'])) && (isset($this->body['header']))) {
+            $this->article
+                ->setAuthor($this->body['author'])
+                ->setText($this->body['text'])
+                ->setHeader($this->body['header'])
+                ->save();
+            return new RedirectResponse('index.php?ctrl=NewsAdmin&act=list');
         }
 
         $template = TwigWorker::twig('adminAddArticle.html', [
@@ -74,28 +101,30 @@ class NewsAdmin implements RequestHandlerInterface
      */
     public function showArticle(ServerRequestInterface $request): ResponseInterface
     {
-        $body = $request->getParsedBody();
-        $query = $request->getQueryParams();
-        $article = Article::findById($query['id']);
 
-        if ((isset ($body["DeleteArticle"])) && ($body["DeleteArticle"] === 'true')) {
-            $article->delete();
-            return new Response\RedirectResponse("index.php?ctrl=NewsAdmin&act=list");
+        if (!(isset($this->query['id']))) {
+            throw new Exception('Not found id', 404);
         }
 
-        $template = TwigWorker::twig('adminArticle.html', ['title' => $article->getHeader(),
-            'article' => $article->getArticle(),
+
+        if ((isset ($this->body["DeleteArticle"])) && ($this->body["DeleteArticle"] === 'true')) {
+            $this->article->delete();
+            return new RedirectResponse("index.php?ctrl=NewsAdmin&act=list");
+        }
+
+        $template = TwigWorker::twig('adminArticle.html', ['title' => $this->article->getHeader(),
+            'article' => $this->article->getArticle(),
             'name' => 'DeleteArticle',
             'value' => "true",
             'actions' => [
                 ['action' => 'index.php', 'method' => 'post', 'text' => 'Home'],
                 ['action' => 'index.php?ctrl=NewsAdmin&act=list', 'method' => 'post', 'text' => 'News'],
-                ['action' => 'index.php?ctrl=NewsAdmin&act=showArticle&id=' . $article->getId(), 'method' => 'post', 'text' => 'Delete article'],
-                ['action' => 'index.php?ctrl=NewsAdmin&act=editingArticle&id=' . $article->getId(), 'method' => 'post', 'text' => 'Editing Article'],
+                ['action' => 'index.php?ctrl=NewsAdmin&act=showArticle&id=' . $this->article->getId(), 'method' => 'post', 'text' => 'Delete article'],
+                ['action' => 'index.php?ctrl=NewsAdmin&act=editingArticle&id=' . $this->article->getId(), 'method' => 'post', 'text' => 'Editing Article'],
             ]
         ]);
 
-        return new Response\HtmlResponse($template);
+        return new HtmlResponse($template);
     }
 
     /**
@@ -103,31 +132,40 @@ class NewsAdmin implements RequestHandlerInterface
      */
     public function editingArticle(ServerRequestInterface $request): ResponseInterface
     {
-        $query = $request->getQueryParams();
-        $body = $request->getParsedBody();;
-        $article = new Article();
-        if ((isset ($body['readyToUpdate'])) && ($body['readyToUpdate'] === 'true')) {
-            $article->setText($body['text'])->setHeader($body['header'])
-                ->setAuthor($body['author'])->setId($query['id'])->save();
-
-            return new Response\RedirectResponse("index.php?ctrl=NewsAdmin&act=list");
+        if (!(isset($this->query['id']))) {
+            throw new Exception('Not found id', 404);
         }
 
-        $article = Article::findById($query['id']);
+        if ((isset ($this->body['readyToUpdate'])) && ($this->body['readyToUpdate'] === 'true')) {
+            $this->article
+                ->setText($this->body['text'])
+                ->setHeader($this->body['header'])
+                ->setAuthor($this->body['author'])
+                ->setId($this->query['id'])
+                ->save();
+            return new RedirectResponse("index.php?ctrl=NewsAdmin&act=list");
+        }
+
 
         $template = TwigWorker::twig('adminEditingArticle.html', [
             'title' => 'Editing Article',
-            'article' => $article->getArticle(),
+            'article' => $this->article->getArticle(),
             'inputHeader' => ['type' => 'text', 'name' => 'header'],
             'textarea' => ['rows' => 5, 'cols' => 28, 'name' => 'text'],
             'inputAuthor' => ['type' => 'text', 'name' => 'author'],
             'name' => 'readyToUpdate',
             'value' => 'true',
-            'actions' => ['actions' =>
-                ['action' => 'index.php?ctrl=NewsAdmin&act=showArticle&id=' . $query['id'], 'method' => 'post', 'text' => 'Article'],
-            ]]);
+            'actions' =>
+                [
+                    'actions' =>
+                        [
+                            'action' => 'index.php?ctrl=NewsAdmin&act=showArticle&id=' . $this->query['id'],
+                            'method' => 'post',
+                            'text' => 'Article'
+                        ],
+                ]]);
 
-        return new  Response\HtmlResponse($template);
+        return new  HtmlResponse($template);
     }
 
 

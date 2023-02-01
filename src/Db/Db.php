@@ -13,7 +13,7 @@ class Db
      */
     protected static function includeDb(): PDO
     {
-        return new   \PDO('mysql:host=mysql_db;dbname=homework;charset=utf8mb4', 'root', 'root');
+        return new   PDO('mysql:host=mysql_db;dbname=homework;charset=utf8mb4', 'root', 'root');
     }
 
     /**
@@ -37,18 +37,20 @@ class Db
      * @return array|false
      */
 
-    public static function query(string $sql, string $class = null, array $data = []): array|false
+    public static function query(string $sql, string $class = null, array $data = []): array|null
     {
-
+//var_dump($sql);
         $dbh = Db:: includeDb();
         $sth = $dbh->prepare($sql);
         $sth->execute($data);
-
+        $data = null;
         if ($class != null) {
-            return $sth->fetchAll(\PDO::FETCH_CLASS, $class);
+            $data= $sth->fetchAll(\PDO::FETCH_CLASS, $class);
         } else {
-            return $sth->fetchAll();
+            $data= $sth->fetchAll();
         }
+        return ($data!==false)? $data : null;
+
     }
 
 }
